@@ -65,6 +65,13 @@
 						</tbody>
 					</table>
 				</div>
+				<div class="box-footer clearfix" v-if="!detailUser">
+					<ul class="pagination pagination-sm no-margin pull-right">
+						<li><a href="#" @click.prevent="prevPage">&laquo;</a></li>
+						<li v-for="p in totalPages"><a href="#" @click.prevent="page(p)" v-if="Math.abs(p - currentPage)<5||p==1||p==totalPages-1">{{ p }}</a></li>
+						<li><a href="#" @click.prevent="nextPage">&raquo;</a></li>
+					</ul>
+				</div>
 			</div>
 		</div>
 		<div class="col-lg-6" v-if="detailUser">
@@ -285,7 +292,7 @@
         if(this.currentPage > 1) this.currentPage--;
 			},
 			nextPage() {
-        if(this.currentPage > 1) this.currentPage++;
+        if(this.currentPage >= 1) this.currentPage++;
 			},
 			add() {
 				let vm = this, d = new Date();

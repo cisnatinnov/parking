@@ -1,0 +1,117 @@
+<!-- Left side column. contains the logo and sidebar -->
+<aside class="left-side sidebar-offcanvas">
+	<!-- sidebar: style can be found in sidebar.less -->
+	<section class="sidebar">
+		<!-- Sidebar user panel -->
+		<div class="user-panel">
+			<div class="pull-left image">
+				<img src="img/avatar3.png" class="img-circle" alt="User Image" />
+			</div>
+		</div>
+		<!-- /Sidebar user panel -->
+
+		<!-- sidebar menu: : style can be found in sidebar.less -->
+		<ul class="sidebar-menu">
+			<li><a href="/"><i class="fa fa-home"></i> Beranda</a></li>
+			<% if (session.menu.includes('vehicles')) { %>
+				<li class="treeview">
+					<a href="#">
+						<i class="fa fa-list-alt"></i>
+						<span>Kendaraan</span>
+						<i class="fa fa-angle-left pull-right"></i>
+					</a>
+					<ul class="treeview-menu">
+						<li>
+							<a href="/cars">
+								<i class="fa fa-circle-o"></i> <span>Mobil</span>
+							</a>
+						</li>
+						<li>
+							<a href="/motorcycles">
+								<i class="fa fa-circle-o"></i> <span>Motor</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+			<% } if (session.menu.includes('benefits')) { %>
+				<li class="treeview">
+					<a href="#">
+						<i class="fa fa-money"></i>
+						<span>Keuntungan</span>
+						<i class="fa fa-angle-left pull-right"></i>
+					</a>
+					<ul class="treeview-menu">
+						<li>
+							<a href="/car_benefits">
+								<i class="fa fa-circle-o"></i> <span>Mobil</span>
+							</a>
+						</li>
+						<li>
+							<a href="/motorcycle_benefits">
+								<i class="fa fa-circle-o"></i> <span>Motor</span>
+							</a>
+						</li>
+					</ul>
+				</li>		
+			<% } if (session.menu.includes('setting')) { %>		
+				<li class="treeview">
+					<a href="#">
+						<i class="fa fa-gears"></i>
+						<span>Pengaturan</span>
+						<i class="fa fa-angle-left pull-right"></i>
+					</a>
+					<ul class="treeview-menu">
+						<li>
+							<a href="/users">
+								<i class="fa fa-circle-o"></i> <span>Pengguna</span>
+							</a>
+						</li>
+						<li class="treeview" style="display: none;">
+							<a href="#">
+								<i class="fa fa-circle-o"></i>
+								<span>Tarif</span>
+								<i class="fa fa-angle-left pull-right"></i>
+							</a>
+							<ul class="treeview-menu">
+								<li>
+									<a href="/car_rates">
+										<i class="fa fa-circle-o"></i> <span>Mobil</span>
+									</a>
+								</li>
+								<li>
+									<a href="/motorcycle_rates">
+										<i class="fa fa-circle-o"></i> <span>Motor</span>
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+			<% } if (session.access_id===2) { %>
+				<li class="treeview">
+					<a href="#">
+						<i class="fa fa-file-o"></i>
+						<span>Laporan</span>
+						<i class="fa fa-angle-left pull-right"></i>
+					</a>
+					<ul class="treeview-menu">
+						<li>
+							<a href="/car_reports">
+								<i class="fa fa-circle-o"></i> <span>Mobil</span>
+							</a>
+						</li>
+						<li>
+							<a href="/motorcycle_reports">
+								<i class="fa fa-circle-o"></i> <span>Motor</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+			<% } %>
+		</ul>
+
+		<!-- /sidebar menu: : style can be found in sidebar.less -->
+	</section>
+	<!-- /sidebar: style can be found in sidebar.less -->
+</aside>
+<!-- /Left side column. contains the logo and sidebar -->

@@ -1,0 +1,379 @@
+<!-- Main content -->
+<section class="content" id="chart">
+  <div class="row">
+		<div class="col-md-12">
+			<div class="box box-solid">
+				<div class="box-body">
+					<div class="box-body text-center">
+						<div id="chart1"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6">
+			<div class="box box-solid">
+				<div class="box-body">
+					<div class="box-body text-center">
+						<div id="chart2"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="box box-solid">
+				<div class="box-body">
+					<div class="box-body text-center">
+						<div id="chart3"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+  <div class="row">
+		<div class="col-md-6">
+			<div class="box box-solid">
+				<div class="box-body">
+					<div class="box-body text-center">
+						<div id="statusMobil"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="box box-solid">
+				<div class="box-body">
+					<div class="box-body text-center">
+						<div id="statusMotor"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<script>
+var chart = new Vue({
+	el: '#chart',
+	data: {
+		cars: [],
+		motorcycles: []
+	},
+	methods: {
+		getData() {
+			let vm = this;
+			axios.get('/kendaraan').then((res) => {
+				vm.cars = res.data.cars;
+				vm.motorcycles = res.data.motorcycles;
+				vm.Chart1(vm.cars, vm.motorcycles);
+			});
+
+			axios.get('/type').then((res) => {
+				vm.Chart2(res.data.data);
+			});
+
+			axios.get('/status').then((res) => {
+				vm.Status(res.data.cars, res.data.motorcycles)
+			});
+		},
+		Chart1(cars, motorcycles) {
+			Highcharts.chart('chart1', {
+				title: {
+					text: 'Jumlah Kendaraan'
+				},
+
+				xAxis: {
+					categories: ['Mobil', 'Motor']
+				},
+
+				legend: {
+					layout: 'vertical',
+					align: 'right',
+					verticalAlign: 'middle'
+				},
+
+				plotOptions: {
+					series: {
+						label: {
+							connectorAllowed: false
+						}
+					}
+				},
+
+				series: [{
+					name: 'Series',
+					data: [cars, motorcycles]
+				}],
+
+				responsive: {
+					rules: [{
+						condition: {
+							maxWidth: 500
+						},
+						chartOptions: {
+							legend: {
+								layout: 'horizontal',
+								align: 'center',
+								verticalAlign: 'bottom'
+							}
+						}
+					}]
+				},
+
+				responsive: {
+					rules: [{
+						condition: {
+							maxWidth: 500
+						},
+						chartOptions: {
+							legend: {
+								layout: 'horizontal',
+								align: 'center',
+								verticalAlign: 'bottom'
+							}
+						}
+					}]
+				},
+
+				credits: {
+					text: "Parkir"
+				}
+			})
+		},
+		Chart2(data) {
+			Highcharts.chart('chart2', {
+				chart: {
+					plotBackgroundColor: null,
+					plotBorderWidth: null,
+					plotShadow: false,
+					type: 'pie'
+				},
+				title: {
+					text: 'Jumlah Mobil Berdasarkan Type'
+				},
+				tooltip: {
+					pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+				},
+				accessibility: {
+					point: {
+						valueSuffix: '%'
+					}
+				},
+				legend: {
+					layout: 'vertical',
+					align: 'right',
+					verticalAlign: 'middle'
+				},
+				plotOptions: {
+					pie: {
+						allowPointSelect: true,
+						cursor: 'pointer',
+						dataLabels: {
+							enabled: false
+						},
+						showInLegend: true
+					}
+				},
+				series: [{
+					name: 'Type',
+					colorByPoint: true,
+					data: data.car
+				}],
+				credits: {
+					text: "Parkir"
+				}
+			});
+
+			Highcharts.chart('chart3', {
+				chart: {
+					plotBackgroundColor: null,
+					plotBorderWidth: null,
+					plotShadow: false,
+					type: 'pie'
+				},
+				title: {
+					text: 'Jumlah Motor Berdasarkan Type'
+				},
+				tooltip: {
+					pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+				},
+				accessibility: {
+					point: {
+						valueSuffix: '%'
+					}
+				},
+				legend: {
+					layout: 'vertical',
+					align: 'right',
+					verticalAlign: 'middle'
+				},
+				plotOptions: {
+					pie: {
+						allowPointSelect: true,
+						cursor: 'pointer',
+						dataLabels: {
+							enabled: false
+						},
+						showInLegend: true
+					}
+				},
+				series: [{
+					name: 'Type',
+					colorByPoint: true,
+					data: data.motorcycle
+				}],
+				credits: {
+					text: "Parkir"
+				}
+			});
+		},
+
+		
+		Status(cars, motorcycles) {
+			let statusMobil = [], mobil = [], statusMotor = [], motor = [];
+			_.forEach(cars, (o) => {
+				statusMobil.push(o.status)
+			})
+			_.forEach(cars, (o) => {
+				mobil.push(o.car)
+			})
+
+			_.forEach(motorcycles, (o) => {
+				statusMotor.push(o.status)
+			})
+			_.forEach(motorcycles, (o) => {
+				motor.push(o.motorcycle)
+			})
+
+			Highcharts.chart('statusMobil', {
+				title: {
+					text: 'Jumlah Mobil Berdasarkan Status'
+				},
+
+				xAxis: {
+					categories: statusMobil
+				},
+
+				legend: {
+					layout: 'vertical',
+					align: 'right',
+					verticalAlign: 'middle'
+				},
+
+				plotOptions: {
+					series: {
+						label: {
+							connectorAllowed: false
+						}
+					}
+				},
+
+				series: [{
+					name: 'Series',
+					data: mobil
+				}],
+
+				responsive: {
+					rules: [{
+						condition: {
+							maxWidth: 500
+						},
+						chartOptions: {
+							legend: {
+								layout: 'horizontal',
+								align: 'center',
+								verticalAlign: 'bottom'
+							}
+						}
+					}]
+				},
+
+				responsive: {
+					rules: [{
+						condition: {
+							maxWidth: 500
+						},
+						chartOptions: {
+							legend: {
+								layout: 'horizontal',
+								align: 'center',
+								verticalAlign: 'bottom'
+							}
+						}
+					}]
+				},
+
+				credits: {
+					text: "Parkir"
+				}
+			})
+
+			Highcharts.chart('statusMotor', {
+				title: {
+					text: 'Jumlah Motor Berdasarkan Status'
+				},
+
+				xAxis: {
+					categories: statusMotor
+				},
+
+				legend: {
+					layout: 'vertical',
+					align: 'right',
+					verticalAlign: 'middle'
+				},
+
+				plotOptions: {
+					series: {
+						label: {
+							connectorAllowed: false
+						}
+					}
+				},
+
+				series: [{
+					name: 'Series',
+					data: mobil
+				}],
+
+				responsive: {
+					rules: [{
+						condition: {
+							maxWidth: 500
+						},
+						chartOptions: {
+							legend: {
+								layout: 'horizontal',
+								align: 'center',
+								verticalAlign: 'bottom'
+							}
+						}
+					}]
+				},
+
+				responsive: {
+					rules: [{
+						condition: {
+							maxWidth: 500
+						},
+						chartOptions: {
+							legend: {
+								layout: 'horizontal',
+								align: 'center',
+								verticalAlign: 'bottom'
+							}
+						}
+					}]
+				},
+
+				credits: {
+					text: "Parkir"
+				}
+			})
+		},
+	},
+	mounted() {
+		this.getData();
+	}
+})
+</script>			

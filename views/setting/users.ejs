@@ -250,7 +250,7 @@
 						if (index >= start && index < end) return true;
 					}          
         })
-			},
+			}
 		},
 		methods: {
 			addZero(i) {
@@ -265,6 +265,7 @@
 				axios.get('/users/lists').then((res) => {
 					lists = res.data.data
 					vm.lists = lists;
+					vm.total = lists.length;
 				})
 				.catch((error) => {
           console.log(error);

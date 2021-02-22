@@ -1,0 +1,359 @@
+<!-- Main content -->
+<section class="content" id="lists">
+	<!-- Small boxes (Stat box) -->
+	<div class="row">
+		<div :class="{ 'col-lg-12': !carDetail, 'col-lg-6': carDetail }">
+			<div class="box">
+				<div class="box-header">
+					<div class="box-tools">
+						<div class="row">
+							<div class="col-sm-2">
+								<select v-model="perPage" class="form-control">
+									<option value="10">10</option>
+									<option value="25">25</option>
+									<option value="50">50</option>
+									<option value="100">100</option>
+								</select>
+							</div>
+							<div class="col-sm-10">
+								<input type="text" name="table_search" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Cari" v-model="searchKey"/>
+								<a href="#" @click.prevent="add" class="btn btn-sm btn-success pull-right"><i class="fa fa-plus"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="box-body">
+					<table class="table table-bordered">
+						<tr>
+							<th style="width: 50px" class="text-center"># <a href="" @click.prevent="sort('no')" class="pull-right"><i class="fa fa-arrows-v"></i></a></th>
+							<th class="text-center">Plat Nomor <a href="" @click.prevent="sort('number')" class="pull-right"><i class="fa fa-arrows-v"></i></a></th>
+							<th class="text-center">Merk <a href="" @click.prevent="sort('merk')" class="pull-right"><i class="fa fa-arrows-v"></i></a></th>							
+							<th class="text-center">Tipe <a href="" @click.prevent="sort('type')" class="pull-right"><i class="fa fa-arrows-v"></i></a></th>
+							<th class="text-center">Status</th>
+							<th style="width: 100px" class="text-center">Jam Masuk <a href="" @click.prevent="sort('in')" class="pull-right"><i class="fa fa-arrows-v"></i></a></th>
+              <th style="width: 100px" class="text-center">Tanggal <a href="" @click.prevent="sort('create_at')" class="pull-right"><i class="fa fa-arrows-v"></i></a></th>
+							<th></th>
+						</tr>
+						<tr v-for="(o, i) in sortfiltered_car">
+							<td class="text-center" v-html="o.no"></td>
+							<td v-html="o.number"></td>
+							<td v-html="o.merk"></td>
+							<td v-html="o.type"></td>
+							<td v-html="o.status"></td>
+							<td class="text-center" v-html="o.in"></td>
+							<td class="text-center" v-html="o.create_at"></td>
+							<td class="text-center">
+								<a href="" @click.prevent="edit(o)" class="btn btn-sm btn-primary" v-if="o.status==='Keluar'">
+									<i class="fa fa-sign-in"></i>
+								</a>
+								<a href="" @click.prevent="detail(o)" class="btn btn-sm btn-info"><i class="fa fa-info"></i></a>
+								<a href="" @click.prevent="out(o)" class="btn btn-sm btn-danger" v-if="o.status!=='Keluar'"><i class="fa fa-sign-out"></i></a>
+							</td>
+						</tr>
+					</table>
+				</div>					
+				<div class="box-footer clearfix" v-if="!carDetail">
+					<ul class="pagination pagination-sm no-margin pull-right">
+						<li><a href="#" @click.prevent="prevPage">&laquo;</a></li>
+						<li v-for="p in totalPages"><a href="#" @click.prevent="page(p)" v-if="Math.abs(p - currentPage)<5||p==1||p==totalPages-1">{{ p }}</a></li>
+						<li><a href="#" @click.prevent="nextPage">&raquo;</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6" v-if="carDetail">
+			<div class="box">
+				<div class="box-header">
+					<h4 for="label" v-html="label"></h4>
+				</div>
+				<div class="box-body">
+					<div class="row">
+						<div class="col-lg-3">
+							<label for="type">Tipe *</label>
+							<select v-model="detailCar.type" class="form-control" :disabled="disabled">
+								<option v-for="t in type" :value="t">{{ t }}</option>
+							</select>
+						</div>
+						<div class="col-lg-3">
+							<label for="merk">Merek *</label>
+							<input type="text" class="form-control" v-model="detailCar.merk" :disabled="disabled">
+						</div>
+						<div class="col-lg-3">
+							<label for="length">Panjang (m) *</label>
+							<input type="text" class="form-control" v-model="detailCar.length" :disabled="disabled">
+						</div>
+						<div class="col-lg-3">						
+							<label for="width">Lebar (m) *</label>
+							<input type="text" class="form-control" v-model="detailCar.width" :disabled="disabled">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-3">
+							<label for="heigth">Tinggi (m) *</label>
+							<input type="text" class="form-control" v-model="detailCar.heigth" :disabled="disabled">
+						</div>
+						<div class="col-lg-3">
+							<label for="volume">Volume (m<sup>3</sup>) *</label>
+							<input type="text" class="form-control" v-model="detailCar.volume" disabled>
+						</div>
+						<div class="col-lg-3">
+							<label for="volume">Plat Nomor *</label>
+							<input type="text" class="form-control" v-model="detailCar.number" :disabled="disabled">
+						</div>
+						<div class="col-lg-3">
+							<label for="time_in">Jam Masuk</label>
+							<input type="text" class="form-control" v-model="time_in" disabled>
+						</div>
+					</div>
+					<div class="row" v-if="label==='Keluar'||label==='Detail'">
+						<div class="col-lg-3">
+							<label for="time_out">Jam Keluar</label>
+							<input type="text" class="form-control" v-model="time_out" disabled>
+						</div>
+						<div class="col-lg-3">
+							<label for="total_rate">Tarif</label>
+							<input type="text" class="form-control" v-model="total_rate" disabled>
+						</div>
+					</div>
+				</div>
+				<div class="box-footer clearfix">
+					<a href="" @click.prevent="close" class="btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i> Tutup</a>					
+					<button href="" @click.prevent="save" class="btn btn-sm btn-primary pull-right">
+						<i class="fa fa-save"></i>
+						Simpan
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- /Main content -->
+<script>
+	var lists = new Vue({
+		el: '#lists',
+		data: {
+			lists: [],
+			detailCar: {},
+			disabled: false,
+			type: [ 'Sedan', 'Minibus', 'Jeep' ],
+			carDetail: false,
+			perPage: 10,
+			searchKey: '',
+			total: 0,
+			currentSort:'no',
+			currentSortDir: 'desc',
+			pageSize:10,
+			currentPage:1,
+			hour_in: '',
+			hour_out: '',
+			time_in: '',
+			time_out: '',
+			rate: 3000,
+			total_rate: 0,
+			label: '',
+			date: '',
+			persen: 0,
+			benefits: 0
+		},
+		watch: {
+			perPage: {
+				immediate: true,
+				deep: true,
+				handler(nv) {
+				if (nv==0) return;
+				this.pageSize = nv;
+				}
+			},
+			detailCar: {
+				immediate: true,
+				deep: true,
+				handler(nv) {
+					if (_.isEmpty(nv)) return;
+					let volume = nv.length * nv.width * nv.heigth;
+					if (!_.isNaN(volume)) this.detailCar.volume = volume.toFixed(2);
+					else this.detailCar.volume = 0;
+
+					if (!_.isEmpty(nv.in)) this.time_in = nv.in; 
+					if (this.label==='Detail') {
+						if (!_.isEmpty(nv.out)) this.time_out = nv.out;
+						else this.time_out = "";
+					}
+					if (this.label==='Edit') this.time_out = "";
+				}
+			}
+		},
+		computed: {
+			totalPages() {
+        return Math.ceil(this.total / this.pageSize);
+      },
+			sortfiltered_car() {
+				return this.lists.sort((a,b) => {
+					let modifier = 1;
+					if(this.currentSortDir === 'asc') modifier = -1;
+					if(a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
+          if(a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
+          return 0;
+				}).filter((row, index) => {
+          let start = (this.currentPage-1)*this.pageSize;
+					let end = this.currentPage*this.pageSize;
+					if (!_.isEmpty(this.searchKey)) {
+						if (index >= start && index < end && 
+							(_.includes(_.lowerCase(row.number), _.lowerCase(this.searchKey)) ||
+								_.includes(_.lowerCase(row.merk), _.lowerCase(this.searchKey)) ||
+								_.includes(_.lowerCase(row.type), _.lowerCase(this.searchKey)) ||
+								_.includes(_.lowerCase(row.status), _.lowerCase(this.searchKey)) ||
+								_.includes(row.in, this.searchKey) ||
+								_.includes(row.create_at, this.searchKey)
+							)
+						) return true;
+					}
+					else {
+						if (index >= start && index < end) return true;
+					}          
+        })
+			}
+		},
+		methods: {
+			addZero(i) {
+				if (i < 10) {
+					i = "0"+ i;
+				}
+				return i;
+			},
+			reload() {
+				let vm = this;
+				vm.time_in = '';
+				vm.time_out = '';
+				vm.rate = 3000;
+				vm.total_rate = 0;
+				vm.carDetail = false;
+				vm.detailCar = {};
+				vm.searchKey = '';
+
+				axios.get('/cars/lists').then((res) => {
+					vm.lists = res.data.data;
+				})
+				.catch((error) => {
+          console.log(error);
+        })
+			},
+			sort(s) {
+        //if s == current sort, reverse
+        if(s === this.currentSort) {
+          this.currentSortDir = this.currentSortDir==='asc'?'desc':'asc';
+        }
+        this.currentSort = s;
+			},
+			edit(o) {
+				let vm = this, d = new Date();
+				vm.label = 'Edit';
+				vm.time_in = vm.addZero(d.getHours())+":"+vm.addZero(d.getMinutes())+":"+vm.addZero(d.getSeconds());
+				vm.carDetail = true;
+				vm.time_out = '';
+				vm.detailCar = o;
+				vm.rate = 3000;
+				vm.total_rate = 0;
+				vm.persen = 0;
+				vm.benefits = 0;
+				vm.disabled = true;
+
+				vm.date = d.getFullYear()+"-"+vm.addZero(d.getMonth()+1)+"-"+vm.addZero(d.getDate());
+			},
+			detail(o) {
+				let vm = this;
+				vm.label = 'Detail';
+				vm.time_out = '';
+				vm.carDetail = true;
+				vm.detailCar = o;
+				vm.rate = 3000;
+				vm.total_rate = 0;
+				vm.persen = 0;
+				vm.benefits = 0;
+				vm.disabled = true;
+			},
+			out(o) {
+				let vm = this, d = new Date(), str = o.in, hours = d.getHours(), res = str.substring(0,2), tdy = 0,
+				year = d.getFullYear(), benefits = 0, persen = 0;
+				vm.label = 'Keluar';
+				if (res == vm.addZero(hours)) {
+					vm.total_rate = 3000;
+				}
+				else {
+					vm.total_rate = (vm.addZero(hours)-res) * 3000;
+				}
+				vm.time_out = vm.addZero(d.getHours())+":"+vm.addZero(d.getMinutes())+":"+vm.addZero(d.getSeconds());
+				vm.carDetail = true;
+				vm.detailCar = o;
+				vm.disabled = true;
+
+				tdy = 1000 - String(year).substring(1,4);
+				persen = tdy/o.volume;
+				vm.persen = persen.toFixed(2)/100;
+				benefits = vm.total_rate * vm.persen;
+				vm.benefits = benefits;
+				vm.rate = vm.total_rate - benefits;
+				vm.date = d.getFullYear()+"-"+vm.addZero(d.getMonth()+1)+"-"+vm.addZero(d.getDate());
+			},
+			add() {
+				let vm = this, d = new Date();
+				vm.label = 'Masuk';
+				vm.time_in = vm.addZero(d.getHours())+":"+vm.addZero(d.getMinutes())+":"+vm.addZero(d.getSeconds());
+				vm.time_out = '';
+				vm.carDetail = true;
+				vm.detailCar = {};
+				vm.rate = 3000;
+				vm.total_rate = 0;
+				vm.persen = 0;
+				vm.benefits = 0;
+				vm.disabled = false;
+
+				vm.date = d.getFullYear()+"-"+vm.addZero(d.getMonth()+1)+"-"+vm.addZero(d.getDate());
+			},
+			page(p) {
+        this.currentPage = p;
+      },
+      prevPage() {
+        if(this.currentPage > 1) this.currentPage--;
+			},
+			nextPage() {
+        if(this.currentPage > 1) this.currentPage++;
+			},
+			save() {
+				let vm = this, data = {
+					label: vm.label,
+					detailCar: vm.detailCar,
+					time_in: vm.time_in,
+					time_out: vm.time_out,
+					date: vm.date,
+					rate: vm.rate,
+					total_rate: vm.total_rate,
+					persen: vm.persen,
+					benefits: vm.benefits
+				}
+				
+				axios.post('cars/save', data).then((res) => {
+					if (res.data.result=='success') {
+            vm.reload();
+          }
+				})
+				.catch((error) => {
+          console.log(error);
+        })
+			},
+			close() {
+				let vm = this;
+				vm.time_in = '';
+				vm.time_out = '';
+				vm.rate = 3000;
+				vm.total_rate = 0;
+				vm.carDetail = false;
+				vm.detailCar = {};
+				vm.searchKey = '';
+			}
+		},
+		mounted() {
+			let vm = this;
+			vm.reload();
+		}
+	})
+</script>

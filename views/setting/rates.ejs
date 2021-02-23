@@ -119,6 +119,16 @@
 			disabled: false,
 			counter: 2
 		},
+		watch: {
+			perPage: {
+				immediate: true,
+				deep: true,
+				handler(nv) {
+					if (nv==0) return;
+					this.pageSize = nv;
+				}
+			}
+		},
 		computed: {
 			totalPages() {
         return Math.ceil(this.total / this.pageSize);

@@ -54,6 +54,7 @@
 										<i class="fa fa-pencil"></i>
 									</a>
 									<a href="" @click.prevent="detail(o)" class="btn btn-sm btn-info"><i class="fa fa-info"></i></a>
+									<a href="" @click.prevent="delete(o.id)" class="btn btn-sm btn-danger"><i class="fa fa-eraser"></i></a>
 								</td>
 							</tr>
 						</tbody>						
@@ -162,6 +163,7 @@
 				let vm = this;
 				vm.detailTarif = false;
 				vm.disabled = false;
+				vm.label = '';
 				axios.get('/rates/lists').then((res) => {
 					lists = res.data.data
 					vm.lists = lists;
@@ -214,6 +216,13 @@
 				vm.label = "Detail";
 				vm.rates = o;
 				vm.disabled = true;
+			},		
+			delete(id) {
+				axios.get('rates/delete/'+id, (res) => {
+					if (res.data.result == 'success') {
+						this.reload();
+					}
+				})
 			},
 			save() {
 				let vm = this, data = {

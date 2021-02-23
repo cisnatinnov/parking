@@ -49,6 +49,7 @@
 										<i class="fa fa-pencil"></i>
 									</a>
 									<a href="" @click.prevent="detail(o)" class="btn btn-sm btn-info"><i class="fa fa-info"></i></a>
+									<a href="" @click.prevent="delete(o.id)" class="btn btn-sm btn-danger"><i class="fa fa-eraser"></i></a>
 								</td>
 							</tr>
 						</tbody>						
@@ -224,6 +225,13 @@
 				vm.label = "Detail";
 				vm.accesses = o;
 				vm.disabled = true;
+			},
+			delete(id) {
+				axios.get('accesses/delete/'+id, (res) => {
+					if (res.data.result == 'success') {
+						this.reload();
+					}
+				})
 			},
 			delMenu(item, index) {
 				let vm = this;

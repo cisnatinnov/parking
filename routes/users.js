@@ -104,4 +104,21 @@ app.get('/getPerson/:user_id', (req, res) => {
 		})
 	}
 })
+
+app.get('/delete/:id', (req, res) => {
+	req.getConnection((error, conn) => {
+		if (error) throw error;
+		conn.query('DELETE FROM users WHERE id = '+req.params.id, (err) => {
+			if (err) throw err;
+			else {
+				conn.query('DELETE FROM persons WHERE user_id = '+req.params.id, (errPerson) => {
+					if (errPerson) throw errPerson;
+					res.json({
+						result: 'success'
+					})
+				})
+			}
+		})
+	})
+})
 module.exports = app;

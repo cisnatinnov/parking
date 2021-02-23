@@ -59,7 +59,7 @@
 										<i class="fa fa-pencil"></i>
 									</a>
 									<a href="" @click.prevent="detail(o)" class="btn btn-sm btn-info"><i class="fa fa-info"></i></a>
-									<a href="" @click.prevent="out(o)" class="btn btn-sm btn-danger"><i class="fa fa-eraser"></i></a>
+									<a href="" @click.prevent="delete(o.id)" class="btn btn-sm btn-danger"><i class="fa fa-eraser"></i></a>
 								</td>
 							</tr>
 						</tbody>
@@ -325,6 +325,13 @@
 				vm.getPerson(o.id);
 
 				vm.date = d.getFullYear()+"-"+vm.addZero(d.getMonth()+1)+"-"+vm.addZero(d.getDate());
+			},
+			delete(id) {
+				axios.get('users/delete/'+id, (res) => {
+					if (res.data.result == 'success') {
+						this.reload();
+					}
+				})
 			},
 			close() {
 				let vm = this;

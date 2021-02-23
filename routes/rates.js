@@ -58,4 +58,18 @@ app.post('/save', (req, res) => {
 		}
 	})
 })
+
+app.get('/delete/:id', (req, res) => {
+	req.getConnection((error, conn) => {
+		if (error) throw error;
+		conn.query('DELETE FROM rates WHERE id = '+req.params.id, (err) => {
+			if (err) throw err;
+			else {
+				res.json({
+					result: 'success'
+				})
+			}
+		})
+	})
+})
 module.exports = app;

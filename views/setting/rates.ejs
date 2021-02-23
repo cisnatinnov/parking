@@ -1,0 +1,225 @@
+<!-- Main content -->
+<section class="content" id="lists">
+	<!-- Small boxes (Stat box) -->
+	<div class="row">
+		<div :class="{ 'col-lg-12': !detailTarif, 'col-lg-6': detailTarif }">
+			<div class="box">
+				<div class="box-header">
+					<div class="box-tools">
+						<div class="row">
+							<div class="col-sm-2">
+								<select v-model="perPage" class="login_form">
+									<option value="10">10</option>
+									<option value="25">25</option>
+									<option value="50">50</option>
+									<option value="100">100</option>
+								</select>
+							</div>
+							<div class="col-sm-10">
+								<input type="text" name="table_search" class="login_form input-sm pull-right" style="width: 150px;" placeholder="cari" v-model="searchKey"/>
+								<a href="#" @click.prevent="add" class="btn btn-sm btn-success pull-right"><i class="fa fa-plus"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="box-body">
+					<table class="table table-bordered">
+						<thead>
+							<tr>								
+								<th style="width: 50px" class="text-center">#
+									<a href="" @click.prevent="sort('no')" class="pull-right"><i class="fa fa-arrows-v"></i></a>
+								</th>
+								<th class="text-center">
+									Akses
+									<a href="" @click.prevent="sort('rate')" class="pull-right"><i class="fa fa-arrows-v"></i></a>
+								</th>
+								<th class="text-center">
+									Kendaraan
+									<a href="" @click.prevent="sort('vehicle')" class="pull-right"><i class="fa fa-arrows-v"></i></a>
+								</th>
+								<th class="text-center">
+									Status
+								</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(o, i) in sortfiltered_rate">
+								<td class="text-center" v-html="o.no"></td>
+								<td v-html="o.rate"></td>
+								<td v-html="o.vehicle"></td>
+								<td v-html="o.status"></td>
+								<td class="text-center">
+									<a href="" @click.prevent="edit(o)" class="btn btn-sm btn-warning">
+										<i class="fa fa-pencil"></i>
+									</a>
+									<a href="" @click.prevent="detail(o)" class="btn btn-sm btn-info"><i class="fa fa-info"></i></a>
+								</td>
+							</tr>
+						</tbody>						
+					</table>
+				</div>
+				<div class="box-footer clearfix" v-if="!detailTarif">
+					<ul class="pagination pagination-sm no-margin pull-right">
+						<li><a href="#" @click.prevent="prevPage">&laquo;</a></li>
+						<li v-for="p in totalPages"><a href="#" @click.prevent="page(p)" v-if="Math.abs(p - currentPage)<5||p==1||p==totalPages-1">{{ p }}</a></li>
+						<li><a href="#" @click.prevent="nextPage">&raquo;</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6" v-if="detailTarif">
+			<div class="box">
+				<div class="box-header">
+					<h4 for="label" v-html="label"></h4>
+				</div>
+				<div class="box-body">
+					<div class="row">
+						<div class="col-lg-6">
+							<label>Tarif *</label>
+							<input type="number" class="form-control" v-model="rates.rate" :disabled="disabled" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-6">
+							<label>Kendaraan *</label>
+							<select class="form-control" v-model="rates.vehicle" :disabled="disabled" required>
+								<option value="Car">Mobil</option>
+								<option value="MotorCycle">Sepeda Motor</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="box-footer clearfix">
+					<a href="" @click.prevent="close" class="btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i> Tutup</a>
+					<button @click.prevent="save" class="btn btn-sm btn-primary pull-right" v-if="label!=='Detail'">
+						<i class="fa fa-save"></i>
+						Simpan
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<script>
+	var lists = new Vue({
+		el: '#lists',
+		data: {
+			lists: [],
+			detailTarif: false,
+			perPage: 10,
+			searchKey: '',
+			total: 0,
+			currentSort:'no',
+			currentSortDir: 'desc',
+			pageSize:10,
+			currentPage:1,
+			label: '',
+			rates: {},
+			disabled: false,
+			counter: 2
+		},
+		computed: {
+			totalPages() {
+        return Math.ceil(this.total / this.pageSize);
+      },
+			sortfiltered_rate() {
+				return this.lists.sort((a,b) => {
+					let modifier = 1;
+					if(this.currentSortDir === 'asc') modifier = -1;
+					if(a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
+          if(a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
+          return 0;
+				}).filter((row, index) => {
+          let start = (this.currentPage-1)*this.pageSize;
+					let end = this.currentPage*this.pageSize;
+					
+					if (!_.isEmpty(this.searchKey)) {
+						if (index >= start && index < end &&
+							(_.includes(_.lowerCase(row.rate), _.lowerCase(this.searchKey)) ||
+								_.includes(_.lowerCase(row.status), _.lowerCase(this.searchKey))
+							)
+						) return true;
+					}
+					else {
+						if (index >= start && index < end) return true;
+					}          
+        })
+			}
+		},
+		methods: {
+			reload() {
+				let vm = this;
+				vm.detailTarif = false;
+				vm.disabled = false;
+				axios.get('/rates/lists').then((res) => {
+					lists = res.data.data
+					vm.lists = lists;
+					vm.total = lists.length;
+				})
+				.catch((error) => {
+          console.log(error);
+				});
+			},
+			sort(s) {
+        //if s == current sort, reverse
+        if(s === this.currentSort) {
+          this.currentSortDir = this.currentSortDir==='asc'?'desc':'asc';
+        }
+        this.currentSort = s;
+			},
+			page(p) {
+        this.currentPage = p;
+      },
+      prevPage() {
+        if(this.currentPage > 1) this.currentPage--;
+			},
+			nextPage() {
+        if(this.currentPage >= 1) this.currentPage++;
+			},
+			add() {
+				let vm = this;
+				vm.detailTarif = true;
+				vm.label = "Tambah";
+				vm.rates = {
+					rate: 0,
+					vehicle: "",
+					status: "Aktif",
+				}
+				vm.disabled = false;
+			},
+			close() {
+				this.reload();
+			},
+			edit(o) {
+				let vm = this;
+				vm.detailTarif = true;
+				vm.label = "Ubah";
+				vm.rates = o;
+				vm.disabled = false;
+			},
+			detail(o) {
+				let vm = this;
+				vm.detailTarif = true;
+				vm.label = "Detail";
+				vm.rates = o;
+				vm.disabled = true;
+			},
+			save() {
+				let vm = this, data = {
+					label: vm.label,
+					rate: vm.rates
+				};
+				axios.post('/rates/save', data).then((res) => {
+					if (res.data.result == 'success') {
+						vm.reload();
+					}
+				})
+			}
+		},
+		mounted() {
+			let vm = this;
+			vm.reload();
+		}
+	})
+</script>

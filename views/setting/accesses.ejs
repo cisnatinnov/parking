@@ -206,6 +206,13 @@
 				vm.label = "Ubah";
 				vm.accesses = o;
 				vm.disabled = false;
+			},			
+			detail(o) {
+				let vm = this;
+				vm.detailAkses = true;
+				vm.label = "Detail";
+				vm.accesses = o;
+				vm.disabled = true;
 			},
 			delMenu(item, index) {
 				let vm = this;

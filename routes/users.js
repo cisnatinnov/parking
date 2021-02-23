@@ -3,11 +3,12 @@ const app = express();
 var _ = require('lodash');
 var moment = require('moment');
 
-// display cars
+// display users
 app.get('/', (req, res) => {
 	if (!req.session.email) res.redirect('/login');
 	else res.render('index', {title: 'Pengguna', page: 'setting/users', session: req.session});
 })
+
 app.get('/lists', (req, res) => {
 	if (!req.session.email) res.redirect('/login');
 	else {

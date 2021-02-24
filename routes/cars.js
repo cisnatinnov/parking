@@ -30,6 +30,7 @@ app.get('/lists', (req, res) => {
               number: o.number,
               in: o.in,
               out: o.out,
+              rate: o.rate,
               status: o.status,
               create_at: moment(o.create_at).format('DD-MM-YYYY'),
               update_at: moment(o.update_at).format('DD-MM-YYYY')

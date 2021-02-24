@@ -127,7 +127,8 @@
 			hour_out: '',
 			time_in: '',
 			time_out: '',
-			rate: 1000,
+			rate: 0,
+			outRate: 0,
 			total_rate: 0,
 			label: '',
 			date: '',
@@ -200,11 +201,18 @@
 				let vm = this;
 				vm.time_in = '';
 				vm.time_out = '';
-				vm.rate = 1000;
 				vm.total_rate = 0;
 				vm.motorDetail = false;
 				vm.detailMotor = {};
 				vm.searchKey = '';
+				
+				axios.get('/rates/rate/motorcycle').then((res) => {
+					vm.rate = res.data.rate;
+				})				
+				.catch((error) => {
+          console.log(error);
+        })
+
 				axios.get('/motorcycles/lists').then((res) => {
 					this.lists = res.data.data;
 				})
@@ -222,7 +230,6 @@
 				vm.time_out = '';
 				vm.motorDetail = true;
 				vm.detailMotor = o;
-				vm.rate = 1000;
 				vm.total_rate = 0;
 				vm.persen = 0;
 				vm.benefits = 0;
@@ -236,7 +243,6 @@
 				vm.time_out = '';
 				vm.motorDetail = true;
 				vm.detailMotor = o;
-				vm.rate = 1000;
 				vm.total_rate = 0;
 				vm.persen = 0;
 				vm.benefits = 0;
@@ -247,10 +253,10 @@
 				benefits = 0, persen = 0;
 				vm.label = 'Keluar';
 				if (res == vm.addZero(hours)) {
-					vm.total_rate = 1000;
+					vm.total_rate = o.rate;
 				}
 				else {
-					vm.total_rate = (vm.addZero(hours)-res) * 1000;
+					vm.total_rate = (vm.addZero(hours)-res) * o.rate;
 				}
 				vm.time_out = vm.addZero(d.getHours())+":"+vm.addZero(d.getMinutes())+":"+vm.addZero(d.getSeconds());
 				vm.motorDetail = true;
@@ -263,7 +269,7 @@
 
 				vm.persen = persen;
 				vm.benefits = (vm.total_rate*persen)/100;
-				vm.rate = vm.total_rate - vm.benefits;
+				vm.outRate = vm.total_rate - vm.benefits;
 				vm.date = d.getFullYear()+"-"+vm.addZero(d.getMonth()+1)+"-"+vm.addZero(d.getDate());
 			},
 			add() {
@@ -273,7 +279,6 @@
 				vm.time_out = '';
 				vm.motorDetail = true;
 				vm.detailMotor = {};
-				vm.rate = 1000;
 				vm.total_rate = 0;
 				vm.persen = 0;
 				vm.benefits = 0;
@@ -289,6 +294,7 @@
 					time_out: vm.time_out,
 					date: vm.date,
 					rate: vm.rate,
+					outRate: vm.outRate,
 					total_rate: vm.total_rate,
 					persen: vm.persen/100,
 					benefits: vm.benefits
@@ -306,7 +312,6 @@
 				let vm = this;
 				vm.time_in = '';
 				vm.time_out = '';
-				vm.rate = 1000;
 				vm.total_rate = 0;
 				vm.motorDetail = false;
 				vm.detailMotor = {};

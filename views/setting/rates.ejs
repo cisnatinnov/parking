@@ -85,8 +85,17 @@
 						<div class="col-lg-6">
 							<label>Kendaraan *</label>
 							<select class="form-control" v-model="rates.vehicle" :disabled="disabled" required>
-								<option value="Car">Mobil</option>
-								<option value="MotorCycle">Sepeda Motor</option>
+								<option value="car">Mobil</option>
+								<option value="motorCycle">Sepeda Motor</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-6">
+							<label>Status *</label>
+							<select class="form-control" v-model="rates.status" :disabled="disabled" required>
+								<option value="Aktif">Aktif</option>
+								<option value="Tidak Aktif">Tidak Aktif</option>
 							</select>
 						</div>
 					</div>

@@ -45,13 +45,13 @@ app.post('/save', (req, res) => {
 	else {
 		let detailMotor = req.body.detailMotor, label = req.body.label,
 		time_in = req.body.time_in, time_out = req.body.time_out, date = req.body.date, rate = req.body.rate,
-		total_rate = req.body.total_rate, persen = req.body.persen, benefits = req.body.benefits;
+		outRate = req.body.outRate, total_rate = req.body.total_rate, persen = req.body.persen, benefits = req.body.benefits;
 
 		req.getConnection((error, conn) => {
 			if (error) throw error;
 			else {
 				if (label==='Masuk') {
-					let insertMotor = Object.assign(detailMotor, { in: time_in, status: label, create_at: date });
+					let insertMotor = Object.assign(detailMotor, { in: time_in, status: label, create_at: date, rate: rate });
 					conn.query('INSERT INTO motorcycles SET ?', insertMotor, (err, result) => {
 						if (err) throw err;
 						res.json({
@@ -60,7 +60,7 @@ app.post('/save', (req, res) => {
 					})
 				}
 				else if (label==='Edit') {
-					let updateMotor = { in: time_in, status: 'Masuk', update_at: date };
+					let updateMotor = { in: time_in, status: 'Masuk', update_at: date, rate: rate };
 					conn.query('UPDATE motorcycles SET ? WHERE id = ' + detailMotor.id, updateMotor, (err) => {
 						if (err) throw err;
 						res.json({
@@ -69,11 +69,11 @@ app.post('/save', (req, res) => {
 					})
 				}
 				else {
-					let updateMotor = { out: time_out, status: label, update_at: date };
+					let updateMotor = { out: time_out, status: label, update_at: date, rate: rate };
 					conn.query('UPDATE motorcycles SET ? WHERE id = ' + detailMotor.id, updateMotor, (err) => {
 						if (err) throw err;
 						let insertBenefits = { motorcycle_id: detailMotor.id, motorcycle_number: detailMotor.number, persen: persen,
-						rate: rate, total_rate: total_rate, benefit: benefits, status: 'Belum disetujui', create_at: date };
+						rate: rate, out_rate: outRate, total_rate: total_rate, benefit: benefits, status: 'Belum disetujui', create_at: date };
 						conn.query('INSERT INTO motorcycle_benefits SET ?', insertBenefits, (errInsert) => {
 							if (errInsert) throw errInsert;
 							res.json({

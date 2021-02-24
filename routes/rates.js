@@ -50,9 +50,19 @@ app.post('/save', (req, res) => {
 			conn.query(query, data, (err) => {
 				if (err) throw err;
 				else {
-					res.json({
-						result: 'success'
-					})
+					if (label=='Tambah') {
+						conn.query('UPDATE rates SET status = 0 WHERE vehicle = '+data.vehicle, (errUpdate) => {
+							if (errUpdate) throw errUpdate;
+							res.json({
+								result: 'success'
+							})
+						})
+					}
+					else {						
+						res.json({
+							result: 'success'
+						})
+					}
 				}
 			});
 		}
@@ -67,6 +77,20 @@ app.get('/delete/:id', (req, res) => {
 			else {
 				res.json({
 					result: 'success'
+				})
+			}
+		})
+	})
+})
+
+app.get('/rate/:vehicle', (req, res) => {
+	req.getConnection((error, conn) => {
+		if (error) throw error;
+		conn.query('SELECT rate FROM rates WHERE vehicle = ? AND status = 1', req.params.vehicle, (err, rows) => {
+			if (err) throw err;
+			else {
+				res.json({
+					rate: rows[0].rate
 				})
 			}
 		})

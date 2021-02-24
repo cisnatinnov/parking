@@ -41,7 +41,12 @@ app.post('/save', (req, res) => {
 			data.status = (data.status=='Aktif') ? '1': '0';
 			if (label=='Tambah') {
 				data.created_at = moment().format('YYYY-MM-DD HH:mm:ss');
-				query = 'INSERT INTO rates SET ?';
+				conn.query('UPDATE rates SET status = 0 WHERE vehicle = '+data.vehicle, (err) => {
+					if (err) throw err;
+					else {
+						query = 'INSERT INTO rates SET ?';
+					}
+				})
 			}
 			else {
 				data.updated_at = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -50,19 +55,9 @@ app.post('/save', (req, res) => {
 			conn.query(query, data, (err) => {
 				if (err) throw err;
 				else {
-					if (label=='Tambah') {
-						conn.query('UPDATE rates SET status = 0 WHERE vehicle = '+data.vehicle, (errUpdate) => {
-							if (errUpdate) throw errUpdate;
-							res.json({
-								result: 'success'
-							})
-						})
-					}
-					else {						
-						res.json({
-							result: 'success'
-						})
-					}
+					res.json({
+						result: 'success'
+					})
 				}
 			});
 		}

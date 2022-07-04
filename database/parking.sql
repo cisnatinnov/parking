@@ -31,7 +31,7 @@ CREATE TABLE `access`  (
 -- ----------------------------
 -- Records of access
 -- ----------------------------
-INSERT INTO `access` VALUES (1, 'Admin', 'benefits', 'setting');
+INSERT INTO `access` VALUES (1, 'Admin', 'benefits');
 INSERT INTO `access` VALUES (2, 'Keuangan', 'reports');
 INSERT INTO `access` VALUES (3, 'Petugas', 'vehicles');
 

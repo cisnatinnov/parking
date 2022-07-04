@@ -24,7 +24,7 @@ app.post('/signin', (req, res) => {
       else {
         if (rows[0].password==user.password) {
           let access = rows[0].access_id;
-          conn.query("SELECT * FROM accesses WHERE id = "+access, (errAcc, accesses) => {
+          conn.query("SELECT * FROM access WHERE id = "+access, (errAcc, accesses) => {
             if (errAcc) throw errAcc;
             else {
               conn.query("SELECT * FROM persons WHERE user_id = ?", [rows[0].id], (err, results) => {

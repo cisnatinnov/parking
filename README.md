@@ -1,6 +1,6 @@
 # parking
 
-- Clone repository
+- Clone [repository](https://github.com/cisnatinnov/parking.git)
 - Open visual studio code
 - Click "Terminal"
 - Type "npm install" then enter
